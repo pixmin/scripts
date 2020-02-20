@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Simple bash script to extract website information from vhosts
+# Works with Apache and Nginx
+
 APACHE_VHOSTS=/etc/apache2/sites-enabled
 NGINX_VHOSTS=/etc/nginx/sites-enabled
 
