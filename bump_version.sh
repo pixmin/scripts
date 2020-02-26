@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if we are in a git repository
+if ! git ls-files >& /dev/null; then
+	echo -e "Must be run from a GIT repository folder"
+	exit 0
+fi
+
 FILE=VERSION
 CAL_VER=`date "+%y.%m"`
 MINOR="0"
