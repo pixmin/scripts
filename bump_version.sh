@@ -1,5 +1,12 @@
 #!/bin/bash
 
+### Script used to bump a project version using GIT tags
+###
+### Can use a file to store the version numver, or use GIT tags
+###
+### Inspired by
+### https://gist.github.com/mareksuscak/1f206fbc3bb9d97dec9c
+
 # Check if we are in a git repository
 if ! git ls-files >& /dev/null; then
 	echo -e "Must be run from a GIT repository folder"
