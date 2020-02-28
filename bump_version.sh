@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 0.0.5
+# Version 0.0.6
 
 ### Script used to bump a project version using GIT tags
 ###
@@ -13,7 +13,7 @@
 ### [ ] Run from outside project and scan subfolders for git projects
 ### [x] Check if on branch master, warn if not
 ### [x] Check if YY.MM changed, if so reset last part to zero
-### [ ] Read server destination from .gitlab-ci.yml
+### [x] Read server destination from .gitlab-ci.yml
 
 ### COLORS
 RED="\033[1;31m"
@@ -42,26 +42,20 @@ if [ "$BRANCH_NAME" != "master" ]; then
 	read
 fi
 
-# Filename containing the version number
-FILE=VERSION
+# Check if we have a .gitlab-ci.yml file
+SERVER=""
+if test -f ".gitlab-ci.yml"; then
+	SERVER=`cat .gitlab-ci.yml | grep deploy-prod -A 100 | grep -m 1 SERVER_GROUP | cut -f 2 -d "'"`
+fi
 
 # Defaults
 CAL_VER=`date "+%y.%m"`
 
-# Check if we have a file
-if test -f "$FILE"; then
-	
-	# Use version from file
-	read -r CURRENT_VERSION<$FILE
-
-else
-
-	# Use version from latest annotated git tag
-	LATEST_TAG=`git describe --abbrev=0`
-	LATEST_TAG=`git tag -l --sort=-version:refname | head -n 1`
-	if [[ $LATEST_TAG =~ ^v[0-9]{2}.[0-9]{2}.[0-9]{2}$ ]]; then
-		CURRENT_VERSION=$LATEST_TAG
-	fi
+# Use version from latest annotated git tag
+LATEST_TAG=`git describe --abbrev=0 2>/dev/null`
+LATEST_TAG=`git tag -l --sort=-version:refname | head -n 1`
+if [[ $LATEST_TAG =~ ^v[0-9]{2}.[0-9]{2}.[0-9]{2}$ ]]; then
+	CURRENT_VERSION=$LATEST_TAG
 fi
 
 # Generate a new version number if we could not extract one
@@ -86,12 +80,17 @@ fi
 NEW_VERSION="$CAL_VER.$NEW_MINOR"
 
 echo -e ""
-echo -e "Found current version:\t $CURRENT_VERSION"
-echo -e "Bumping new version to:\t v$NEW_VERSION"
+echo -e "Current version:\t v$CURRENT_VERSION"
+echo -e "New version:    \t v$NEW_VERSION"
 echo -e ""
 
 TAG="v$NEW_VERSION"
-TAG_MESSAGE="Deployed version ${NEW_VERSION}"
+TAG_MESSAGE="deployed version ${NEW_VERSION}"
+if [ "$SERVER" != "" ]; then
+	TAG_MESSAGE="Auto ${TAG_MESSAGE} to [${SERVER}]"
+else
+	TAG_MESSAGE="Manually ${TAG_MESSAGE}"
+fi
 
 echo -e "About to add and push annotated tag '${GREEN}${TAG}${RESET}' with message:"
 echo -e ""
