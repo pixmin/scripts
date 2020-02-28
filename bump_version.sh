@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 0.0.4
+# Version 0.0.5
 
 ### Script used to bump a project version using GIT tags
 ###
@@ -11,8 +11,9 @@
 
 ### TODO:
 ### [ ] Run from outside project and scan subfolders for git projects
-### [ ] Check if on branch master, warn if not
+### [x] Check if on branch master, warn if not
 ### [x] Check if YY.MM changed, if so reset last part to zero
+### [ ] Read server destination from .gitlab-ci.yml
 
 ### COLORS
 RED="\033[1;31m"
@@ -29,6 +30,16 @@ RESET="\033[0m"
 if ! git ls-files >& /dev/null; then
 	echo -e "Must be run from a GIT repository folder"
 	exit 0
+fi
+
+# Check if we are on master branch
+BRANCH_NAME="$(git symbolic-ref HEAD 2>/dev/null)" ||
+BRANCH_NAME="(unnamed branch)"     # detached HEAD
+BRANCH_NAME=${BRANCH_NAME##refs/heads/}
+if [ "$BRANCH_NAME" != "master" ]; then
+	echo -e "${RED}Not on master branch!${RESET} Continue?"
+	echo -e "${GREY}CTRL + C to stop, anything else to continue.${RESET}"
+	read
 fi
 
 # Filename containing the version number
@@ -106,4 +117,3 @@ fi
 
 # Store new version in file
 #echo $NEW_VERSION > $FILE
-
