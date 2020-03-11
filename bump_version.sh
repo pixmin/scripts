@@ -71,7 +71,7 @@ MINOR=${ADDR[2]}
 # Check if we have the same version base (0Y.0M)
 if [ "$BASE_VERSION" = "v$CAL_VER" ]; then
 	# Bump minor version
-	NEW_MINOR=`printf %02d $((MINOR + 1))`
+	NEW_MINOR=`printf %02d $((10#$MINOR + 1))`
 else
 	NEW_MINOR="01"
 fi
@@ -80,7 +80,7 @@ fi
 NEW_VERSION="$CAL_VER.$NEW_MINOR"
 
 echo -e ""
-echo -e "Current version:\t v$CURRENT_VERSION"
+echo -e "Current version:\t $CURRENT_VERSION"
 echo -e "New version:    \t v$NEW_VERSION"
 echo -e ""
 
