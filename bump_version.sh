@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 0.0.6
+# Version 0.0.7
 
 ### Script used to bump a project version using GIT tags
 ###
@@ -58,6 +58,13 @@ if [[ $LATEST_TAG =~ ^v[0-9]{2}.[0-9]{2}.[0-9]{2}$ ]]; then
 	CURRENT_VERSION=$LATEST_TAG
 fi
 
+# Show commits since last tag => HEAD
+COMMITS_COUNT=`git --no-pager log --oneline --no-merges $LATEST_TAG..HEAD | wc -l | tr -d ' '`
+echo -e "$COMMITS_COUNT Commits since last tag ${CYAN}$CURRENT_VERSION${RESET}:"
+echo -e ""
+git --no-pager log --oneline --no-merges $LATEST_TAG..HEAD
+echo -e ""
+
 # Generate a new version number if we could not extract one
 if [ "$CURRENT_VERSION" = "" ]; then
 	CURRENT_VERSION="${CAL_VER}.00"
@@ -78,11 +85,6 @@ fi
 
 # Generate new tag version
 NEW_VERSION="$CAL_VER.$NEW_MINOR"
-
-echo -e ""
-echo -e "Current version:\t $CURRENT_VERSION"
-echo -e "New version:    \t v$NEW_VERSION"
-echo -e ""
 
 TAG="v$NEW_VERSION"
 TAG_MESSAGE="deployed version ${NEW_VERSION}"
