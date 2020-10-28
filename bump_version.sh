@@ -45,7 +45,7 @@ fi
 # Check if we have a .gitlab-ci.yml file
 SERVER=""
 if test -f ".gitlab-ci.yml"; then
-	SERVER=`cat .gitlab-ci.yml | grep deploy-prod -A 100 | grep -m 1 SERVER_GROUP | cut -f 2 -d "'"`
+	SERVER=`cat .gitlab-ci.yml | grep -E "deploy-prod|name: prod" -A 100 | grep -m 1 SERVER_GROUP | cut -f 2 -d "'"`
 fi
 
 # Defaults
